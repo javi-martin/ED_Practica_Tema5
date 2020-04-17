@@ -64,7 +64,8 @@ public class Vista extends Frame
 
 	Dialog dialogoModificar = new Dialog(this, "Modificar Empleado", true);
 	Label lblModificarEmpleado = new Label("Empleado a modificar:");
-	Button btnSelecionarEmpleado = new Button("Selecionar");
+	Choice choEmpleadoModificar = new Choice();
+	Label lblNombreEmpleadoModificar = new Label("Nombre empreado a MODIFICAR:");
 	Button btnModificarEmpleado = new Button("Modificar");
 	Button btnCancelarModificarEmpleado = new Button("Cancelar");
 	
@@ -122,7 +123,7 @@ public class Vista extends Frame
 		//Establecemos el layout del cuadro de diálogo Modificar Empleado y su tamaño
 		
 		dialogoModificar.setLayout(new FlowLayout());	
-		dialogoModificar.setSize(300,200);
+		dialogoModificar.setSize(250,200);
 		dialogoModificar.setLocationRelativeTo(null);
 		
 		//Establecemos el layout del cuadro de diálogo Modificar Empleado y su tamaño

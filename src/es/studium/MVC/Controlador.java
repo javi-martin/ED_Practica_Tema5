@@ -2,12 +2,14 @@ package es.studium.MVC;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.sql.Connection;
 
 
-public class Controlador implements WindowListener, ActionListener 
+public class Controlador implements WindowListener, ActionListener, ItemListener
 {
 	Modelo modelo = null;	
 	Vista vista = null;
@@ -31,13 +33,14 @@ public class Controlador implements WindowListener, ActionListener
 		vista.btnCancelarEliminarEmpleado.addActionListener(this);
 		
 		vista.btnConsultarEmpleado.addActionListener(this);
-		vista.btnSalirConsultarEmpleado.addActionListener(this);
+		vista.btnSalirConsultarEmpleado.addActionListener(this);		
 		
-		vista.btnSelecionarEmpleado.addActionListener(this);
 		vista.btnModificarEmpleado.addActionListener(this);
 		vista.btnCancelarModificarEmpleado.addActionListener(this);
 		
 		vista.btnSalir.addActionListener(this);
+		
+		vista.choEmpleadoModificar.addItemListener(this);
 		
 		// Añadimos el listener a las ventanas
 		
@@ -128,6 +131,9 @@ public class Controlador implements WindowListener, ActionListener
 			String[] Empleado=vista.choEmpleado.getSelectedItem().split("-");
 			int respuesta = modelo.borrar(con, "empleados","idEmpleado",Integer.parseInt(Empleado[0]));
 			
+			// Desconectar de la base
+			modelo.desconectar(con);
+			
 			// Mostramos resultado
 			if(respuesta == 0)
 			{
@@ -146,17 +152,14 @@ public class Controlador implements WindowListener, ActionListener
 				vista.dialogoInformar.setVisible(true);	
 			}
 			vista.choEmpleado.removeAll();
-			modelo.rellenarChoice(vista.choEmpleado);
-			// Desconectar de la base
-			modelo.desconectar(con);
+			modelo.rellenarChoice(vista.choEmpleado);			
 		}
 		else if (a.equals(vista.modificar)) 
 		{
 			vista.dialogoModificar.add(vista.lblModificarEmpleado);
-			vista.dialogoModificar.add(vista.choEmpleado);
-			modelo.rellenarChoice(vista.choEmpleado);
-			vista.dialogoModificar.add(vista.btnSelecionarEmpleado);
-			vista.dialogoModificar.add(vista.lblNombreEmpleado);
+			vista.dialogoModificar.add(vista.choEmpleadoModificar);
+			modelo.rellenarChoice(vista.choEmpleadoModificar);			
+			vista.dialogoModificar.add(vista.lblNombreEmpleadoModificar);
 			vista.dialogoModificar.add(vista.txtNombreEmpleado);
 			vista.dialogoModificar.add(vista.btnModificarEmpleado);
 			vista.dialogoModificar.add(vista.btnCancelarModificarEmpleado);
@@ -165,21 +168,19 @@ public class Controlador implements WindowListener, ActionListener
 		else if (a.equals(vista.btnCancelarModificarEmpleado)) 
 		{
 			vista.dialogoModificar.setVisible(false);
-		}
-		else if (a.equals(vista.btnSelecionarEmpleado)) 
-		{			
-			String[] Empleado=vista.choEmpleado.getSelectedItem().split("-");
-			vista.txtNombreEmpleado.setText(Empleado[1]);
-		}
+		}		
 		else if (a.equals(vista.btnModificarEmpleado)) 
 		{
 			// Conectar a BD
 			Connection con = modelo.conectar("empresa","root","Studium2019;"); 
 			
 			// Borrar
-			String[] Empleado=vista.choEmpleado.getSelectedItem().split("-");
+			String[] Empleado=vista.choEmpleadoModificar.getSelectedItem().split("-");
 			
 			int respuesta = modelo.modificar(con,vista.txtNombreEmpleado.getText(),Integer.parseInt(Empleado[0]));
+			
+			// Desconectar de la base
+			modelo.desconectar(con);
 			
 			// Mostramos resultado
 			if(respuesta == 0)
@@ -200,11 +201,9 @@ public class Controlador implements WindowListener, ActionListener
 			}
 			vista.txtNombreEmpleado.selectAll();
 			vista.txtNombreEmpleado.setText("");
-			vista.choEmpleado.removeAll();
-			modelo.rellenarChoice(vista.choEmpleado);
-			
-			// Desconectar de la base
-			modelo.desconectar(con);			
+			vista.choEmpleadoModificar.removeAll();
+			modelo.rellenarChoice(vista.choEmpleadoModificar);			
+						
 		}		
 		else if(a.equals(vista.consultar)) 
 		{
@@ -240,6 +239,12 @@ public class Controlador implements WindowListener, ActionListener
 			vista.dialogoInformar.setVisible(false);
 		}
 		
+	}
+	
+	public void itemStateChanged(ItemEvent arg0) 
+	{
+		String[] Empleado=vista.choEmpleadoModificar.getSelectedItem().split("-");
+		vista.txtNombreEmpleado.setText(Empleado[1]);
 	}
 	
 	public void windowActivated(WindowEvent arg0) {}	
